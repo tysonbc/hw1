@@ -6,13 +6,13 @@ class DecisionTreeHW(object):
     def __init__(self) -> None:
         print('ID3 under way...')
 
-    def split(self, feature: list):
-        return {x: (feature==x).nonzero()[0] for x in np.unique(feature)}
+    def split(self, feature: list) -> dict:
+        return {value: (feature==value).nonzero()[0] for value in np.unique(feature)}
 
-    def entropy(s):
+    def entropy(self, feature: list) -> float:
         res = 0
-        val, counts = np.unique(s, return_counts=True)
-        freqs = counts.astype('float')/len(s)
+        val, counts = np.unique(feature, return_counts=True)
+        freqs = counts.astype('float')/len(feature)
         for p in freqs:
             if p != 0.0:
                 res -= p * np.log2(p)
@@ -79,7 +79,7 @@ if __name__ == '__main__':
                 middleName.append('')
                 middle.append(0)
     
-    b = a.split(feature = longFirst)
+    b = a.entropy(feature = longFirst)
     print(b)
 
     
