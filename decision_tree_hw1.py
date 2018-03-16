@@ -1,27 +1,90 @@
 import typing
+import math
+import operator
 import numpy as np
+from pprint import pprint
 
 class DecisionTreeHW(object):
 
     def __init__(self) -> None:
         print('ID3 under way...')
 
-    def split(self, feature: list) -> dict:
-        return {value: (feature==value).nonzero()[0] for value in np.unique(feature)}
+    def split(self, data: list) -> dict:
+        return {val: (data==val).nonzero()[0] for val in np.unique(data)}
 
-    def entropy(self, feature: list) -> float:
+    def entropy(self, data: list) -> float:
         res = 0
-        val, counts = np.unique(feature, return_counts=True)
-        freqs = counts.astype('float')/len(feature)
+        val, counts = np.unique(data, return_counts=True)
+        freqs = counts.astype('float')/len(data)
         for p in freqs:
             if p != 0.0:
                 res -= p * np.log2(p)
         return res
+        
+    def informationGain(self, y: list, x: list) -> float:
+
+        res = self.entropy(y)
+
+        # We partition x, according to attribute values x_i
+        val, counts = np.unique(x, return_counts=True)
+        freqs = counts.astype('float')/len(x)
+
+        # We calculate a weighted average of the entropy
+        for p, v in zip(freqs, val):
+            res -= p * self.entropy(y[x == v])
+
+        return res
+
+    def uniform(self, data: list):
+        return len(set(data)) == 1
+
+    def recursion(self, x: list, y: list):
+        # If there could be no split, just return the original set
+        if self.uniform(y) or len(y) == 0:
+            return y
+
+        # We get attribute that gives the highest mutual information
+        
+        gain = np.array([self.informationGain(y, x_attr) for x_attr in x.T])
+        #print(gain)
+        selected_attr = np.argmax(gain)
+        if selected_attr == 0:
+            attrName = 'LongFirst'
+        elif selected_attr == 1:
+            attrName = 'middle'
+        elif selected_attr == 2:
+            attrName = 'sameLetter'
+        elif selected_attr == 3:
+            attrName = 'firstBeforeLast'
+        elif selected_attr == 4:
+            attrName = 'vowelSecond'
+        else:
+            attrName = 'evenLast'
+
+        
+        # If there's no gain at all, nothing has to be done, just return the original set
+        if np.all(gain < 1e-6):
+            return y
+
+
+        # We split using the selected attribute
+        sets = self.split(x[:, selected_attr])
+        
+        res = {}
+        for k, v in sets.items():
+            y_subset = y.take(v, axis=0)
+            x_subset = x.take(v, axis=0)
+
+            res["%s = %d" % (attrName, k)] = self.recursion(x_subset, y_subset)
+
+        return res
+
+    
 
 if __name__ == '__main__':
     a = DecisionTreeHW()
     f = open('training.data', 'r')
-    label = []
+    labelList = []
     firstName = []
     middleName = []
     lastName = []
@@ -39,10 +102,12 @@ if __name__ == '__main__':
         lineData = str.split(line, ' ')
         if not line or len(lineData) == 1: 
             break
-        else:
-            
+        else:            
 
-            label.append(lineData[0])
+            if lineData[0] == '+':
+                labelList.append(1)
+            else:
+                labelList.append(0)
             firstName.append(lineData[1])
             lastName.append(lineData[len(lineData)-1])
             try:
@@ -79,8 +144,20 @@ if __name__ == '__main__':
                 middleName.append('')
                 middle.append(0)
     
-    b = a.entropy(feature = longFirst)
-    print(b)
+    #final_ds = {}
+    #final_ds['longFirst'] = longFirst
+    #final_ds['middle'] = middle
+    #final_ds['sameLetter'] = sameLetter
+    #final_ds['firstBeforeLast'] = firstBeforeLast
+    #final_ds['vowelSecond'] = vowelSecond
+    #final_ds['evenLast'] = evenLast
+    finalX = np.array([longFirst, middle, sameLetter, firstBeforeLast, vowelSecond, evenLast]).T
+    labelList = np.array(labelList)
+    pprint(a.recursion(finalX, labelList))
+    #pprint(a.uniform(labelList))
+    
+   
+    
 
     
 
