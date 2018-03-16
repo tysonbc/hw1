@@ -39,14 +39,12 @@ class DecisionTreeHW(object):
         return len(set(data)) == 1
 
     def recursion(self, x: list, y: list):
-        # If there could be no split, just return the original set
+        
         if self.uniform(y) or len(y) == 0:
             return y
-
-        # We get attribute that gives the highest mutual information
         
         gain = np.array([self.informationGain(y, x_attr) for x_attr in x.T])
-        #print(gain)
+        
         selected_attr = np.argmax(gain)
         if selected_attr == 0:
             attrName = 'LongFirst'
@@ -61,13 +59,10 @@ class DecisionTreeHW(object):
         else:
             attrName = 'evenLast'
 
-        
-        # If there's no gain at all, nothing has to be done, just return the original set
         if np.all(gain < 1e-6):
             return y
 
 
-        # We split using the selected attribute
         sets = self.split(x[:, selected_attr])
         
         res = {}
@@ -144,17 +139,11 @@ if __name__ == '__main__':
                 middleName.append('')
                 middle.append(0)
     
-    #final_ds = {}
-    #final_ds['longFirst'] = longFirst
-    #final_ds['middle'] = middle
-    #final_ds['sameLetter'] = sameLetter
-    #final_ds['firstBeforeLast'] = firstBeforeLast
-    #final_ds['vowelSecond'] = vowelSecond
-    #final_ds['evenLast'] = evenLast
+
     finalX = np.array([longFirst, middle, sameLetter, firstBeforeLast, vowelSecond, evenLast]).T
     labelList = np.array(labelList)
     pprint(a.recursion(finalX, labelList))
-    #pprint(a.uniform(labelList))
+
     
    
     
