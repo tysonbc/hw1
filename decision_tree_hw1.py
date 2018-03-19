@@ -38,8 +38,8 @@ class DecisionTreeHW(object):
     def uniform(self, data: list):
         return len(set(data)) == 1
 
-    def recursion(self, x: list, y: list):
-        
+    def recursion(self, x: list, y: list, depth: int = None):
+        d = depth*2
         if self.uniform(y) or len(y) == 0:
             return y
         
@@ -70,8 +70,12 @@ class DecisionTreeHW(object):
             y_subset = y.take(v, axis=0)
             x_subset = x.take(v, axis=0)
 
-            res["%s = %d" % (attrName, k)] = self.recursion(x_subset, y_subset)
-
+            if depth:
+                d -= 1
+                res["%s = %d" % (attrName, k)] = self.recursion(x_subset, y_subset,d*2)
+                if d == 0:
+                    break
+          
         return res
 
     
@@ -142,7 +146,7 @@ if __name__ == '__main__':
 
     finalX = np.array([longFirst, middle, sameLetter, firstBeforeLast, vowelSecond, evenLast]).T
     labelList = np.array(labelList)
-    pprint(a.recursion(finalX, labelList))
+    pprint(a.recursion(finalX, labelList,1))
 
     
    
