@@ -80,63 +80,7 @@ class DecisionTreeHW(object):
          
         return res
 
-    def setValue(self, y_pred: dict, ind: int, val: int) -> dict:
-        y_pred[ind] = val
-        return y_pred
-    def predict(self, model: dict, x: dict, w: bool=True, y_shape: int=None) -> dict:
-        
 
-        try:
-            predictions = self.predictions
-        except:
-            if not y_shape:
-                predictions = np.zeros(len(x))
-            else:
-                predictions = np.zeros(y_shape)
-        
-
-        for i in model.keys():
-            #print(i)
-            cond = str(i).split("=")
-            
-            sets = self.attSplit(x[:, int(cond[1])])
-            v = sets[int(cond[2])]
-            x_subset = x.take(v, axis=0)
-            #np.unique(x_subset, axis=0))
-                #break
-            #print(cond)
-            #print(model)
-            try:
-                if y_shape:
-                    self.predict(model[i],x_subset,False, y_shape = y_shape)
-                else:
-                    self.predict(model[i],x_subset,False, y_shape = len(x))
-            except:
-                
-                for p in np.unique(x_subset, axis = 0):
-                    #print(p)
-                    for y in range(0,len(x)-1):
-                        #print(x[y])
-                        if str(p) == str(x[y]):
-                            
-                            #print(model[i])
-                            try:
-                                self.predictions = self.setValue(predictions, y, int(model[i]))
-                                #print(len(self.predictions))
-                            except:
-                                pass
-                
-                            
-                            #predictions[y] = float(model[i])
-                            #print(predictions[y])
-                           
-                            
-                            #print(int(model[i]))
-                            #predictions = np.put(predictions,y, int(model[i]))
-                
-                    #print(model[i])
-            
-        return self.predictions
         
             
             
