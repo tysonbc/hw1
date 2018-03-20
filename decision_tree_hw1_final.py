@@ -174,15 +174,97 @@ if __name__ == '__main__':
     
     labelList = data[1]
     
-    model = a.train(finalX, labelList)
+    model = a.train(finalX, labelList,4)
+    data2 = extractFeatures('updated_test.txt')
     
-    #pprint(model)
+    testX = data2[0]
+    testLabels = data2[1]
+
+    pprint(model)
     pred = a.predict(finalX, model)
     count = 0
     for i in range(0,len(pred)):
         if pred[i] == labelList[i]:
             count+=1
-    print('Error Rate = ' + str((1 - (count/len(pred)))*100) + '%')
+    print('Error Rate on Training = ' + str((1 - (count/len(pred)))*100) + '%')
+
+    pred = a.predict(testX, model)
+    count = 0
+    for i in range(0,len(pred)):
+        if pred[i] == testLabels[i]:
+            count+=1
+    
+    print('Error Rate on Test = ' + str((1 - (count/len(pred)))*100) + '%')
+    data0 = extractFeatures('updated_training00.txt')
+    data1 = extractFeatures('updated_training01.txt')
+    data2 = extractFeatures('updated_training02.txt')
+    data3 = extractFeatures('updated_training03.txt')
+    
+    l=[1,2,3,4,5,10,15,20]
+    #4-fold cross validation implementation
+    for depth in l:
+        
+
+        trainX = np.concatenate((data1[0], data2[0], data3[0]))
+    
+        trainLabels = np.concatenate((data1[1], data2[1], data3[1]))
+        model2 = a.train(trainX, trainLabels, depth)
+        testLabels = data0[1]
+    
+        pred = a.predict(data0[0], model2)
+        count = 0
+        for i in range(0,len(pred)):
+            if pred[i] == testLabels[i]:
+                count+=1
+        print('Cross Validation Error Depth ' + str(depth) + ' = ' + str((1 - (count/len(pred)))*100) + '%')
+    for depth in l:
+        
+
+        trainX = np.concatenate((data0[0], data1[0], data2[0]))
+    
+        trainLabels = np.concatenate((data0[1], data1[1], data2[1]))
+        model2 = a.train(trainX, trainLabels, depth)
+        testLabels = data3[1]
+    
+        pred = a.predict(data3[0], model2)
+        count = 0
+        for i in range(0,len(pred)):
+            if pred[i] == testLabels[i]:
+                count+=1
+        print('Cross Validation Error Depth ' + str(depth) + ' = ' + str((1 - (count/len(pred)))*100) + '%')
+    for depth in l:
+        
+
+        trainX = np.concatenate((data0[0], data2[0], data3[0]))
+    
+        trainLabels = np.concatenate((data0[1], data2[1], data3[1]))
+        model2 = a.train(trainX, trainLabels, depth)
+        testLabels = data1[1]
+    
+        pred = a.predict(data1[0], model2)
+        count = 0
+        for i in range(0,len(pred)):
+            if pred[i] == testLabels[i]:
+                count+=1
+        print('Cross Validation Error Depth ' + str(depth) + ' = ' + str((1 - (count/len(pred)))*100) + '%')
+    for depth in l:
+        
+
+        trainX = np.concatenate((data0[0], data1[0], data3[0]))
+    
+        trainLabels = np.concatenate((data0[1], data1[1], data3[1]))
+        model2 = a.train(trainX, trainLabels, depth)
+        testLabels = data2[1]
+    
+        pred = a.predict(data2[0], model2)
+        count = 0
+        for i in range(0,len(pred)):
+            if pred[i] == testLabels[i]:
+                count+=1
+        print('Cross Validation Error Depth ' + str(depth) + ' = ' + str((1 - (count/len(pred)))*100) + '%')
+
+    
+    
 
        
     
