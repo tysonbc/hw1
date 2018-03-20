@@ -80,8 +80,25 @@ class DecisionTreeHW(object):
          
         return res
 
-
+    def singlePred(self, x, model):
+       
+        for i in model.keys():
+            cond = str(i).split("=")
+            
+            if x[int(cond[1])] == int(cond[2]):
+                #print(cond)
+                try:        
+                    return self.singlePred(x, model[i])
+                except:
+                    
+                    return int(model[i])
+                    
+    def predict(self, x, model):
+        predictions = np.empty(len(x))
+        for i in range(0,len(x)):
+            predictions[i] = self.singlePred(x[i], model)    
         
+        return predictions
             
             
     
@@ -157,10 +174,17 @@ if __name__ == '__main__':
     
     labelList = data[1]
     
-    model = a.train(finalX, labelList,2)
-    pprint(model)
+    model = a.train(finalX, labelList)
     
-   
+    #pprint(model)
+    pred = a.predict(finalX, model)
+    count = 0
+    for i in range(0,len(pred)):
+        if pred[i] == labelList[i]:
+            count+=1
+    print('Error Rate = ' + str((1 - (count/len(pred)))*100) + '%')
+
+       
     
 
 
